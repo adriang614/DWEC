@@ -1,0 +1,9 @@
+services: '3.8'
+  vite:
+    build: .
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    enviroment: CHOKIDAR_USEPOLLING=true
