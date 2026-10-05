@@ -1,12 +1,14 @@
+// Creamos una lista (array) con todos los juegos iniciales de la tienda.
+// Usamos 'export' para poder importar esta lista en otros archivos donde la necesitemos.
 export const catalogoInicial = [
   {
-    id: 1,
-    titulo: 'Chrono Trigger',
-    plataforma: 'SNES',
-    categoria: 'RPG',
-    precioBase: 45,
-    estado: 'usado-como-nuevo',
-    stock: 4
+    id: 1, // Número único para identificar el juego
+    titulo: 'Chrono Trigger', // Nombre del juego
+    plataforma: 'SNES', // Consola a la que pertenece
+    categoria: 'RPG', // Género para poder filtrar luego
+    precioBase: 45, // Precio inicial sin descuentos ni recargos
+    estado: 'usado-como-nuevo', // Estado del producto (coincide con la Tabla A)
+    stock: 4 // Unidades disponibles en la tienda
   },
   {
     id: 2,
