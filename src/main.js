@@ -7,7 +7,7 @@ import {
   formatearProducto
 } from './servicios/inventario.js';
 
-// Mantenemos una copia del catálogo para no modificar la lista original directamente (Inmutabilidad)
+// Mantenemos una copia del catálogo para no modificar la lista original directamente
 let catalogo = [...catalogoInicial];
 
 // Guardamos las ventas hechas para el informe de caja
@@ -46,8 +46,8 @@ Elige una opción (1-6):`
           const lineas = catalogo.map(formatearProducto);
           alert(`--- TODO EL CATÁLOGO ---\n\n${lineas.join('\n')}`);
         } else if (subOpcion === '2') {
-          const catInput = prompt('Escribe la categoría (ej: RPG, Lucha, Plataformas):');
-          if (catInput) {
+          const Input = prompt('Escribe la categoría (ej: RPG, Lucha, Plataformas):');
+          if (Input) {
             // Usamos filter() para obtener solo esa categoría
             const filtrados = catalogo.filter(
               (p) => p.categoria.toLowerCase() === catInput.toLowerCase().trim()

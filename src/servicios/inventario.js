@@ -28,7 +28,7 @@ export const buscarProducto = (catalogo, criterio) => {
   );
 };
 
-// 3. REGISTRAR UNA VENTA (Sin modificar la lista original - Inmutabilidad)
+// 3. REGISTRAR UNA VENTA (Sin modificar la lista original)
 // Usa .map() para crear una LISTA NUEVA restando el stock vendido
 export const registrarVenta = (catalogo, idProducto, cantidad) => {
   return catalogo.map((producto) => {
