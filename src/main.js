@@ -44,7 +44,7 @@ Elige una opción (1-6):`
         if (subOpcion === '1') {
           // Usamos map() para formatear cada línea del catálogo
           const lineas = catalogo.map(formatearProducto);
-          alert(`--- TODO EL CATÁLOGO ---\n\n${lineas.join('\n')}`);
+          console.log(`--- TODO EL CATÁLOGO ---\n\n${lineas.join('\n')}`);
         } else if (subOpcion === '2') {
           const Input = prompt('Escribe la categoría (ej: RPG, Lucha, Plataformas):');
           if (Input) {
@@ -53,18 +53,18 @@ Elige una opción (1-6):`
               (p) => p.categoria.toLowerCase() === catInput.toLowerCase().trim()
             );
             if (filtrados.length > 0) {
-              alert(`--- CATEGORÍA: ${catInput} ---\n\n${filtrados.map(formatearProducto).join('\n')}`);
+              console.log(`--- CATEGORÍA: ${catInput} ---\n\n${filtrados.map(formatearProducto).join('\n')}`);
             } else {
-              alert('No hay productos en esa categoría.');
+              console.log('No hay productos en esa categoría.');
             }
           }
         } else if (subOpcion === '3') {
           // Usamos filter() para sacar solo los de stock bajo (< 3)
           const conStockBajo = catalogo.filter((p) => p.stock < 3);
           if (conStockBajo.length > 0) {
-            alert(`--- PRODUCTOS CON STOCK BAJO ---\n\n${conStockBajo.map(formatearProducto).join('\n')}`);
+            console.log(`--- PRODUCTOS CON STOCK BAJO ---\n\n${conStockBajo.map(formatearProducto).join('\n')}`);
           } else {
-            alert('¡Excelente! No hay ningún producto con stock bajo.');
+            console.log('¡Excelente! No hay ningún producto con stock bajo.');
           }
         }
         break;
@@ -79,9 +79,9 @@ Elige una opción (1-6):`
           // Usamos find() a través de nuestra función buscarProducto
           const prod = buscarProducto(catalogo, criterio);
           if (prod) {
-            alert(`Producto encontrado:\n${formatearProducto(prod)}`);
+            console.log(`Producto encontrado:\n${formatearProducto(prod)}`);
           } else {
-            alert(`No se encontró ningún juego para: "${criterio}"`);
+            console.log(`No se encontró ningún juego para: "${criterio}"`);
           }
         }
         break;
@@ -99,12 +99,12 @@ Elige una opción (1-6):`
         const prod = catalogo.find((p) => p.id === id);
 
         if (!prod) {
-          alert('Error: Producto no encontrado.');
+          console.log('Error: Producto no encontrado.');
           break;
         }
 
         if (isNaN(cantidad) || cantidad <= 0) {
-          alert('Error: La cantidad debe ser un número mayor a 0.');
+          console.log('Error: La cantidad debe ser un número mayor a 0.');
           break;
         }
 
@@ -124,7 +124,7 @@ Elige una opción (1-6):`
 
           const prodActualizado = catalogo.find((p) => p.id === id);
 
-          alert(
+          console.log(
             `¡Venta registrada con éxito!
 -----------------------------------
 Juego: ${prod.titulo}
@@ -133,7 +133,7 @@ Total venta: ${calculo.totalVenta.toFixed(2)} €
 Stock restante: ${prodActualizado.stock} unidades${prodActualizado.stock < 3 ? ' (! Stock bajo)' : ''}`
           );
         } catch (err) {
-          alert(`Error en la venta: ${err.message}`);
+          console.log(`Error en la venta: ${err.message}`);
         }
         break;
       }
@@ -148,14 +148,14 @@ Stock restante: ${prodActualizado.stock} unidades${prodActualizado.stock < 3 ? '
         const prod = catalogo.find((p) => p.id === id);
 
         if (!prod || isNaN(cantidad) || cantidad <= 0) {
-          alert('Datos erróneos o producto inexistente.');
+          console.log('Datos erróneos o producto inexistente.');
           break;
         }
 
         catalogo = reponerStock(catalogo, id, cantidad);
         const prodActualizado = catalogo.find((p) => p.id === id);
 
-        alert(`¡Stock actualizado! Nuevo stock de ${prodActualizado.titulo}: ${prodActualizado.stock}`);
+        console.log(`¡Stock actualizado! Nuevo stock de ${prodActualizado.titulo}: ${prodActualizado.stock}`);
         break;
       }
 
@@ -175,7 +175,7 @@ Stock restante: ${prodActualizado.stock} unidades${prodActualizado.stock < 3 ? '
         // Usamos some() para comprobar si queda algún producto con stock bajo
         const hayStockBajo = catalogo.some((p) => p.stock < 3);
 
-        alert(
+        console.log(
           `--- INFORME DE CAJA DE LA SESIÓN ---
 Total facturado: ${totalFacturado.toFixed(2)} €
 Operaciones realizadas: ${historialVentas.length}
@@ -190,11 +190,11 @@ Estado stock: ${hayStockBajo ? '⚠️ Hay productos en stock bajo' : '✅ Todo 
       // ----------------------------------------------------
       case '6':
       case null:
-        alert('Gracias por usar RetroStock. ¡Hasta la próxima!');
+        console.log('Gracias por usar RetroStock. ¡Hasta la próxima!');
         break;
 
       default:
-        alert('Opción no válida. Por favor, selecciona un número del 1 al 6.');
+        console.log('Opción no válida. Por favor, selecciona un número del 1 al 6.');
         break;
     }
   } while (opcion !== '6' && opcion !== null);
