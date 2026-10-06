@@ -1,9 +1,9 @@
-import { ajuste_estado, obtenerDescuentoVolumen, umbral_stock_bajo } from '/home/alu/DWEC/src/config/negocio.js';
+import { ajuste_estado, obtenerDescuentoVolumen, umbral_stock_bajo } from '../config/negocio.js';
 
 // 1. CALCULAR PRECIO FINAL (Combina Tabla A + Tabla B)
 // Esta función calcula el precio de un juego aplicando sus descuentos/recargos.
 export function calcularPrecioVenta(precioBase, estado, cantidad = 1) {
-    
+
   // Miramos en la Tabla A cuánto le sumamos o restamos por su estado (ej: -0.30 si es solo cartucho)
   const porcentajeEstado = ajuste_estado[estado] ?? 0;
   const precioAjustadoEstado = precioBase * (1 + porcentajeEstado);
