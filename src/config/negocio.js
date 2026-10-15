@@ -4,8 +4,11 @@ export const ajuste_estado = {
   'nuevo-precintado': 0.25,   // Le suma un 25% al precio
   'usado-como-nuevo': 0.00,   // Se queda igual
   'usado-caja-danada': -0.15, // Le descuenta un 15%
-  'solo-cartucho': -0.30      // Le descuenta un 30%
+  'solo-cartucho': -0.30,     // Le descuenta un 30%
+  'solo-caja': -0.40          // Le descuenta un 40%
 };
+
+//estado nuevo solo caja que baja el precdio un 40 y haz un producto que lo use sin modificar el catalogo original
 
 // TABLA B: Le pasamos cuántos juegos se llevan y nos dice qué descuento le regalamos por comprar en cantidad.
 export const obtenerDescuentoVolumen = (cantidad) => {

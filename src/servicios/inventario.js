@@ -5,7 +5,7 @@ import { ajuste_estado, obtenerDescuentoVolumen, umbral_stock_bajo } from '../co
 export function calcularPrecioVenta(precioBase, estado, cantidad = 1) {
 
   // Miramos en la Tabla A cuánto le sumamos o restamos por su estado (ej: -0.30 si es solo cartucho)
-  const porcentajeEstado = ajuste_estado[estado] ?? 0;
+  const porcentajeEstado = producto.precioBase;
   const precioAjustadoEstado = precioBase * (1 + porcentajeEstado);
 
   // Miramos en la Tabla B si se lleva varios juegos para aplicarle descuento por volumen
@@ -59,4 +59,8 @@ export const reponerStock = (catalogo, idProducto, cantidad) => {
 export const formatearProducto = (producto) => {
   const avisoStock = producto.stock < umbral_stock_bajo ? ' ⚠️ ! Stock bajo' : '';
   return `[ID: ${producto.id}] ${producto.titulo} (${producto.plataforma}) | Cat: ${producto.categoria} | Estado: ${producto.estado} | Precio Base: ${producto.precioBase}€ | Stock: ${producto.stock}${avisoStock}`;
+};
+
+export const agregarProducto = (catalogo, nuevoProducto) => {
+  return [...catalogo, nuevoProducto];
 };

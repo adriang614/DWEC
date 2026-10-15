@@ -4,7 +4,8 @@ import {
   buscarProducto,
   registrarVenta,
   reponerStock,
-  formatearProducto
+  formatearProducto,
+  agregarProducto
 } from './servicios/inventario.js';
 
 // Mantenemos una copia del catálogo para no modificar la lista original directamente
@@ -26,7 +27,8 @@ function iniciarMenu() {
 4. Reponer Stock
 5. Informe de Caja
 6. Salir
-Elige una opción (1-6):`
+7. Nuevo producto
+Elige una opción (1-7):`
     );
 
     switch (opcion) {
@@ -50,10 +52,10 @@ Elige una opción (1-6):`
           if (Input) {
             // Usamos filter() para obtener solo esa categoría
             const filtrados = catalogo.filter(
-              (p) => p.categoria.toLowerCase() === catInput.toLowerCase().trim()
+              (p) => p.categoria.toLowerCase() === Input.toLowerCase().trim()
             );
             if (filtrados.length > 0) {
-              console.log(`--- CATEGORÍA: ${catInput} ---\n\n${filtrados.map(formatearProducto).join('\n')}`);
+              console.log(`--- CATEGORÍA: ${Input} ---\n\n${filtrados.map(formatearProducto).join('\n')}`);
             } else {
               console.log('No hay productos en esa categoría.');
             }
@@ -185,6 +187,8 @@ Estado stock: ${hayStockBajo ? '⚠️ Hay productos en stock bajo' : '✅ Todo 
         break;
       }
 
+      
+
       // ----------------------------------------------------
       // OPCIÓN 6 O CANCELAR: SALIR
       // ----------------------------------------------------
@@ -196,6 +200,23 @@ Estado stock: ${hayStockBajo ? '⚠️ Hay productos en stock bajo' : '✅ Todo 
       default:
         console.log('Opción no válida. Por favor, selecciona un número del 1 al 6.');
         break;
+
+      case '7': {
+        const juegoNuevo = {
+          id: 13,
+          titulo: 'Metroid Fusion',
+          plataforma: 'GBA',
+          categoria: 'Plataformas',
+          precioBase: 50,
+          estado: 'solo-caja',
+          stock: 5
+        };
+
+        catalogo = agregarProducto(catalogo, juegoNuevo);
+
+        console.log('Producto añadido');
+        break;
+      }
     }
   } while (opcion !== '6' && opcion !== null);
 }
