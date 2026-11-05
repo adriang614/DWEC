@@ -5,14 +5,25 @@ import { Tarea } from "./Tarea.js";
 
 export class Columna {
   // Privado: #tareas, un array
+  #tareas= [];
+
 
   constructor(nombre, limiteWip = null) {
     // 1 · nombre: texto no vacío (sin espacios a los lados) → si no, TypeError
     //     limiteWip: null (sin límite) o un entero ≥ 1 → si no, RangeError
-    throw new Error("Sin hacer");
+    if(nombre.trim() === "") {
+      throw new TypeError ("El nombre no puede estar vacío")
+    }
+    if(!limiteWip === null || limiteWip < 1) {
+      throw new RangeError ("Debe ser sin límite y entero >= 1")
+    }
   }
 
   // 2 · get llena: true si hay límite y ya hay tantas tareas como el límite
+  get llena() {
+    return this.limiteWip !== null && this.#tareas.length >= this.limiteWip;
+  }
+
 
   // 3 · get tareas: una COPIA del array (que nadie pueda tocar el tuyo desde fuera)
 
