@@ -17,7 +17,10 @@ export class Tablero {
   constructor(limiteEnCurso = 3) {
     // Crea las tres columnas; solo «En curso» lleva límite WIP (limiteEnCurso)
     for (const nombre of Tablero.COLUMNAS) {
-      const limite = nombre === "En curso" ? limiteEnCurso : null;
+      let limite = null;
+      if (nombre === "En curso") {
+        limite = limiteEnCurso;
+      }
       this.#columnas.set(nombre, new Columna(nombre, limite));
     }
   }
@@ -37,8 +40,8 @@ export class Tablero {
     const columna = this.#columnas.get(nombre);
     if (!columna) {
       throw new Error(`No existe la columna "${nombre}".`);
-      return columna;
     }
+    return columna;
   }
 
   // get columnas: array con las tres columnas, en orden
@@ -65,30 +68,76 @@ export class Tablero {
 
   // buscar(id): la tarea, esté en la columna que esté, o null
   buscar(id) {
-    
+    const columna = this.dondeEsta(id);
+    if (columna === null) {
+      return null;
+    }
+    return columna.tareas.find((t) => t.id === id);
   }
   
   // dondeEsta(id): la Columna donde está, o null
   dondeEsta(id) {
-    
+    for (const columna of this.#columnas.values()) {
+      if (columna.tiene(id)) {
+        return columna;
+      }
+    }
+    return null;
   }
 
   // mover(id, destino): Error si no existe la tarea · Error si la columna destino está llena
   //   (¡comprueba ANTES de quitarla de su columna, o se perdería!) · la mueve y la devuelve
   mover(id, destino) {
-    
+    const origen = this.dondeEsta(id);
+    if (origen === null) {
+      throw new Error(`No existe la tarea ${id}.`);
+    }
+
+    const columnaDestino = this.columna(destino);
+    if (columnaDestino.llena) {
+      throw new ColumnaLlenaError(columnaDestino);
+    }
+
+    const tarea = origen.quitar(id);
+    columnaDestino.añadir(tarea);
+    return tarea;
   }
 
   // completar(id): la mueve a «Hecho» y añade a «Por hacer» lo que devuelva tarea.alCompletar()
   //   ⚠️ Sin preguntar si es recurrente: eso es el polimorfismo
   completar(id) {
-    
+    const tarea = this.mover(id, "Hecho");
+
+    const siguiente = tarea.alCompletar();
+    if (siguiente) {
+      this.columna("Por hacer").añadir(siguiente);
+    }
+
+    return tarea;
   }
 
   // resumen(hoy = new Date()): { porHacer, enCurso, hecho, vencidas }
   //   vencidas = las que estaVencida(hoy) y NO están en «Hecho»
   resumen(hoy = new Date()) {
-    
+    let vencidas = 0;
+
+    for (const columna of this.#columnas.values()) {
+      if (columna.nombre === "Hecho") {
+        continue;
+      }
+      for (const tarea of columna.tareas) {
+        if (tarea.estaVencida(hoy)) {
+          vencidas++;
+        }
+      }
+    }
+
+    return {
+      porHacer: this.columna("Por hacer").tareas.length,
+      enCurso: this.columna("En curso").tareas.length,
+      hecho: this.columna("Hecho").tareas.length,
+      vencidas,
+    };
   }
 
   // ✍️ A5 · Reglas (vuelves a mover y completar) ─────────────────────────────────
