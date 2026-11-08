@@ -11,12 +11,14 @@ export class Columna {
   constructor(nombre, limiteWip = null) {
     // 1 · nombre: texto no vacío (sin espacios a los lados) → si no, TypeError
     //     limiteWip: null (sin límite) o un entero ≥ 1 → si no, RangeError
-    if(nombre.trim() === "") {
-      throw new TypeError ("El nombre no puede estar vacío")
+    if(nombre.trim() === "" || typeof nombre !== "string") {
+      throw new TypeError ("El nombre no puede estar vacío y debe ser un texto")
     }
-    if(!limiteWip === null || limiteWip < 1) {
-      throw new RangeError ("Debe ser sin límite y entero >= 1")
+    if (limiteWip !== null && (!Number.isInteger(limiteWip) || limiteWip < 1)){
+      throw new RangeError("Rango no valido");
     }
+    this.nombre = nombre.trim();
+    this.limiteWip = limiteWip;
   }
 
   // 2 · get llena: true si hay límite y ya hay tantas tareas como el límite
@@ -39,8 +41,8 @@ export class Columna {
 
     // Validar si la lista está llena (asumiendo que tienes un límite máximo)
     // Nota: Reemplaza 'this.#LIMITE_MAXIMO' por tu variable real o condición de llenado
-    if (this.#tareas.length >= this.limiteWip) {
-      throw new Error("La lista de tareas está llena.");
+    if (this.llena) {
+      throw new Error(`La columna "${this.nombre}" está llena (límite ${this.limiteWip}).`);
     }
 
     // Si pasa las validaciones, se guarda en el array y se devuelve
@@ -54,8 +56,8 @@ export class Columna {
   quitar(id) {
     const idEliminado = this.#tareas.findIndex(tarea => tarea.id === id);
 
-    if (findIndex === -1) {
-      throw new Error ("No se ha encontrado el id deseado")
+    if (idEliminado === -1) {
+      throw new Error(`La tarea ${id} no está en la columna "${this.nombre}".`);
     }
 
     const [tareaEliminada] = this.#tareas.splice(idEliminado, 1);
