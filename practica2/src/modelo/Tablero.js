@@ -85,31 +85,49 @@ export class Tablero {
     return null;
   }
 
-  // mover(id, destino): Error si no existe la tarea · Error si la columna destino está llena
-  //   (¡comprueba ANTES de quitarla de su columna, o se perdería!) · la mueve y la devuelve
-  mover(id, destino) {
+    // lo uso en mover y completar para no repetir las comprobaciones
+  #trasladar(id, destino) {
     const origen = this.dondeEsta(id);
     if (origen === null) {
       throw new Error(`No existe la tarea ${id}.`);
     }
 
     const columnaDestino = this.columna(destino);
+
+    // de hecho no se puede sacar
+    if (origen.nombre === "Hecho") {
+      throw new MovimientoNoPermitidoError(id, origen.nombre, destino);
+    }
+    // ni mover a la misma columna
+    if (origen === columnaDestino) {
+      throw new MovimientoNoPermitidoError(id, origen.nombre, destino);
+    }
+
+    // si el destino está lleno
     if (columnaDestino.llena) {
       throw new ColumnaLlenaError(columnaDestino);
     }
 
+    // ya está comprobado, ahora la muevo
     const tarea = origen.quitar(id);
     columnaDestino.añadir(tarea);
     return tarea;
   }
 
-  // completar(id): la mueve a «Hecho» y añade a «Por hacer» lo que devuelva tarea.alCompletar()
-  //   ⚠️ Sin preguntar si es recurrente: eso es el polimorfismo
-  completar(id) {
-    const tarea = this.mover(id, "Hecho");
+  // mover(id, destino): Error si no existe la tarea, Error si la columna destino está llena
+  //   (comprueba antes de quitarla de su columna, o se perdería) la mueve y la devuelve
+  mover(id, destino) {
+    return this.#trasladar(id, destino);
+  }
 
-    const siguiente = tarea.alCompletar();
-    if (siguiente) {
+  // completar(id): la mueve a Hecho y añade a Por hacer lo que devuelva tarea.alCompletar()
+  //   Sin preguntar si es recurrente: eso es el polimorfismo
+  completar(id) {
+    const tarea = this.#trasladar(id, "Hecho");
+
+    // devuelve un array: vacío si es normal, con la siguiente si es recurrente
+    const siguientes = tarea.alCompletar();
+    for (const siguiente of siguientes) {
       this.columna("Por hacer").añadir(siguiente);
     }
 
