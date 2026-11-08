@@ -11,34 +11,85 @@ export class Tablero {
   static COLUMNAS = Object.freeze(["Por hacer", "En curso", "Hecho"]);
   static VERSION_DATOS = 1; // (bloque C) si algún día cambia el formato guardado, se sube
   // Privado: #columnas, un Map nombre → Columna
+  #columnas = new Map();
 
   // ✍️ A3 ──────────────────────────────────────────────────────────────────────
   constructor(limiteEnCurso = 3) {
     // Crea las tres columnas; solo «En curso» lleva límite WIP (limiteEnCurso)
-    throw new Error("Sin hacer");
+    for (const nombre of Tablero.COLUMNAS) {
+      const limite = nombre === "En curso" ? limiteEnCurso : null;
+      this.#columnas.set(nombre, new Columna(nombre, limite));
+    }
   }
 
   // static desde(datos, limiteEnCurso): un Tablero con una tarea por cada objeto de datos
   //   (usa crearTarea)
+  static desde (datos, limiteEnCurso) {
+    const tablero = new Tablero(limiteEnCurso);
+    for (const dato of datos) {
+      tablero.crearTarea(dato);
+    }
+    return tablero;
+  }
 
   // columna(nombre): la Columna, o un Error si no existe (que el mensaje lleve el nombre)
+  columna(nombre) {
+    const columna = this.#columnas.get(nombre);
+    if (!columna) {
+      throw new Error(`No existe la columna "${nombre}".`);
+      return columna;
+    }
+  }
+
   // get columnas: array con las tres columnas, en orden
+  get columnas() {
+    return [...this.#columnas.values()]; //[] lo hace array, .values() porque es un map y me hacen falta las columnas
+  }
 
   // crearTarea(datos): TareaRecurrente si datos trae cadaDias, Tarea si no → a «Por hacer»
   //   y la devuelve. datos es un objeto { titulo, prioridad, limite, cadaDias }: saca cada campo
   //   y pásaselo al constructor, en su orden (new Tarea(datos) NO vale: espera el título)
+  crearTarea(datos) {
+    const {titulo, prioridad, limite, cadaDias} = datos;
+
+    let tarea;
+    if (cadaDias) {
+      tarea = new TareaRecurrente(titulo, prioridad, limite, cadaDias);
+    } else {
+      tarea = new Tarea(titulo, prioridad, limite);
+    }
+
+    this.columna("Por hacer").añadir(tarea);
+    return tarea;
+  }
 
   // buscar(id): la tarea, esté en la columna que esté, o null
+  buscar(id) {
+    
+  }
+  
   // dondeEsta(id): la Columna donde está, o null
+  dondeEsta(id) {
+    
+  }
 
   // mover(id, destino): Error si no existe la tarea · Error si la columna destino está llena
   //   (¡comprueba ANTES de quitarla de su columna, o se perdería!) · la mueve y la devuelve
+  mover(id, destino) {
+    
+  }
 
   // completar(id): la mueve a «Hecho» y añade a «Por hacer» lo que devuelva tarea.alCompletar()
   //   ⚠️ Sin preguntar si es recurrente: eso es el polimorfismo
+  completar(id) {
+    
+  }
 
   // resumen(hoy = new Date()): { porHacer, enCurso, hecho, vencidas }
   //   vencidas = las que estaVencida(hoy) y NO están en «Hecho»
+  resumen(hoy = new Date()) {
+    
+  }
 
   // ✍️ A5 · Reglas (vuelves a mover y completar) ─────────────────────────────────
   //   - Columna llena → ColumnaLlenaError (en vez de un Error cualquiera)
