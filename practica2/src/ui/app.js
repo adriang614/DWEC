@@ -42,8 +42,42 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
   //   - [data-dato="progreso"]: hechas ÷ total en %, redondeado (con el tablero vacío, 0 %)
   //   - [data-dato="vencidas"]: las vencidas de tablero.resumen(ahora)
   //   La fecha de hoy: const ahora = hoy ?? new Date();  (los tests pasan una fija)
-  function pintar() {
-    throw new Error("Sin hacer");
+    function pintar() {
+    const ahora = hoy ?? new Date();
+
+    for (const columna of tablero.columnas) {
+      const zona = raiz.querySelector(`[data-columna="${columna.nombre}"]`);
+      const lista = zona.querySelector(".lista");
+      const contador = zona.querySelector(".contador");
+
+      // Tarjetas en el orden de ordenadas()
+      pintarLista(lista, columna.ordenadas(), ahora);
+
+      // Botones de cada tarjeta según la columna
+      for (const tarjeta of lista.querySelectorAll(".tarjeta")) {
+        for (const [texto, accion] of ACCIONES[columna.nombre]) {
+          const boton = document.createElement("button");
+          boton.type = "button";
+          boton.dataset.accion = accion;
+          boton.textContent = texto;
+          tarjeta.append(boton);
+        }
+      }
+
+      // Contador
+      const n = columna.tareas.length;
+      contador.textContent =
+        columna.limiteWip === null ? `(${n})` : `(${n}/${columna.limiteWip})`;
+    }
+
+    // Resumen
+    const total = tablero.columnas.reduce((suma, c) => suma + c.tareas.length, 0);
+    const hechas = tablero.columna("Hecho").tareas.length;
+    const progreso = total === 0 ? 0 : Math.round((hechas / total) * 100);
+
+    resumen.querySelector('[data-dato="progreso"]').textContent = `${progreso} %`;
+    resumen.querySelector('[data-dato="vencidas"]').textContent =
+      tablero.resumen(ahora).vencidas;
   }
 
   // 👀 Resuelto: avisar("texto") enseña el aviso; avisar("") lo esconde
