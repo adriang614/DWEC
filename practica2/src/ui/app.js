@@ -21,7 +21,24 @@ const ACCIONES = {
 //   - cadaDias (si viene): entero mayor que 0. Si es correcto pero no hay limite, el error va
 //     en «limite»: una tarea que se repite necesita fecha límite
 export function validar(datos) {
-  throw new Error("Sin hacer");
+  const errores = {};
+
+  const titulo = datos.titulo ?? "";
+  if (titulo === "") {
+    errores.titulo = "Escribe un título";
+  } else if (titulo.length > 80) {
+    errores.titulo = "El título no puede pasar de 80 caracteres";
+  }
+
+  if (datos.cadaDias !== undefined) {
+    if (!Number.isInteger(datos.cadaDias) || datos.cadaDias <= 0) {
+      errores.cadaDias = "Debe ser un número entero mayor que 0";
+    } else if (!datos.limite) {
+      errores.limite = "Una tarea que se repite necesita fecha límite";
+    }
+  }
+
+  return errores;
 }
 
 /**
@@ -42,7 +59,7 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
   //   - [data-dato="progreso"]: hechas ÷ total en %, redondeado (con el tablero vacío, 0 %)
   //   - [data-dato="vencidas"]: las vencidas de tablero.resumen(ahora)
   //   La fecha de hoy: const ahora = hoy ?? new Date();  (los tests pasan una fija)
-    function pintar() {
+  function pintar() {
     const ahora = hoy ?? new Date();
 
     for (const columna of tablero.columnas) {
@@ -92,7 +109,7 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
   //   Si el tablero lanza un ErrorTablero → avisar(error.message) y no se repinta.
   //   Cualquier otro error → se relanza (es un fallo del programa).
   //   Pista: una función cambiar(accion) con el try/catch te sirve también para el B6.
-    // B5 · una sola función para todos los cambios (también servirá para B6)
+  // B5 · una sola función para todos los cambios (también servirá para B6)
   function cambiar(accion) {
     try {
       accion();
@@ -126,9 +143,19 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
 
   // ✍️ B6 · submit de `form`: preventDefault, leerFormulario, validar y mostrarErrores. Si hay errores,
   //   no se crea nada. Si no, tablero.crearTarea(datos) (como un cambio más) y form.reset().
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+
+    const datos = leerFormulario(form);
+    const errores = validar(datos);
+    mostrarErrores(form, errores);
+
+    if (Object.keys(errores).length > 0) return;
+
+    cambiar(() => tablero.crearTarea(datos));
+    form.reset();
+  });
 
   pintar();
   return { pintar };
 }
-
-(void ACCIONES, ErrorTablero, delegar, leerFormulario, mostrarErrores, pintarLista); // (borra esta línea cuando los uses)
