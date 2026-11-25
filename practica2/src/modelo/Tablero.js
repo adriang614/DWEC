@@ -168,18 +168,32 @@ export class Tablero {
   // ✍️ C4 (bloque C) ────────────────────────────────────────────────────────────
   // toJSON(): { version, limiteEnCurso, columnas: { "Por hacer": [datos…], … } }
   //   JSON.stringify(tablero) lo llama solo. Sin él sale "{}": los # no se ven. Usa aDatos.
+  toJSON() {
+    const columnas = {};
+    for (const nombre of Tablero.COLUMNAS) {
+      columnas[nombre] = this.columna(nombre).tareas.map((tarea) => aDatos(tarea));
+    }
+    return {
+      version: Tablero.VERSION_DATOS,
+      limiteEnCurso: this.columna("En curso").limiteWip,
+      columnas,
+    };
+  }
 
   /** Lo contrario de toJSON: el MISMO tablero (columnas, ids y límite WIP). Lanza si no encaja. */
   static desdeJSON(datos) {
-    throw new Error("Sin hacer");
+    if (!datos || datos.version !== Tablero.VERSION_DATOS) {
+      throw new Error("Datos del tablero no válidos o de otra versión");
+    }
+
+    const tablero = new Tablero(datos.limiteEnCurso);
+    for (const nombre of Tablero.COLUMNAS) {
+      for (const objeto of datos.columnas?.[nombre] ?? []) {
+        tablero.columna(nombre).añadir(desdeDatos(objeto));
+      }
+    }
+    return tablero;
   }
 }
 
 // Comprueba con:  docker compose run --rm web npm test bloque-a
-(void Columna,
-  ColumnaLlenaError,
-  MovimientoNoPermitidoError,
-  Tarea,
-  TareaRecurrente,
-  aDatos,
-  desdeDatos); // (borra esta línea cuando los uses)
