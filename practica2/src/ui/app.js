@@ -83,8 +83,7 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
 
       // Contador
       const n = columna.tareas.length;
-      contador.textContent =
-        columna.limiteWip === null ? `(${n})` : `(${n}/${columna.limiteWip})`;
+      contador.textContent = columna.limiteWip === null ? `(${n})` : `(${n}/${columna.limiteWip})`;
     }
 
     // Resumen
@@ -93,8 +92,7 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
     const progreso = total === 0 ? 0 : Math.round((hechas / total) * 100);
 
     resumen.querySelector('[data-dato="progreso"]').textContent = `${progreso} %`;
-    resumen.querySelector('[data-dato="vencidas"]').textContent =
-      tablero.resumen(ahora).vencidas;
+    resumen.querySelector('[data-dato="vencidas"]').textContent = tablero.resumen(ahora).vencidas;
   }
 
   // 👀 Resuelto: avisar("texto") enseña el aviso; avisar("") lo esconde

@@ -5,16 +5,15 @@ import { Tarea } from "./Tarea.js";
 
 export class Columna {
   // Privado: #tareas, un array
-  #tareas= [];
-
+  #tareas = [];
 
   constructor(nombre, limiteWip = null) {
     // 1 · nombre: texto no vacío (sin espacios a los lados) → si no, TypeError
     //     limiteWip: null (sin límite) o un entero ≥ 1 → si no, RangeError
-    if(nombre.trim() === "" || typeof nombre !== "string") {
-      throw new TypeError ("El nombre no puede estar vacío y debe ser un texto")
+    if (nombre.trim() === "" || typeof nombre !== "string") {
+      throw new TypeError("El nombre no puede estar vacío y debe ser un texto");
     }
-    if (limiteWip !== null && (!Number.isInteger(limiteWip) || limiteWip < 1)){
+    if (limiteWip !== null && (!Number.isInteger(limiteWip) || limiteWip < 1)) {
       throw new RangeError("Rango no valido");
     }
     this.nombre = nombre.trim();
@@ -28,10 +27,10 @@ export class Columna {
 
   // 3 · get tareas: una COPIA del array (que nadie pueda tocar el tuyo desde fuera)
   get tareas() {
-    return [...this.#tareas]
+    return [...this.#tareas];
   }
 
-    // 4 · añadir(tarea): TypeError si no es instanceof Tarea · Error («… está llena …») si está
+  // 4 · añadir(tarea): TypeError si no es instanceof Tarea · Error («… está llena …») si está
   //     llena · si no, la guarda y la devuelve
   añadir(tarea) {
     // Validar que sea una instancia de la clase Tarea
@@ -50,11 +49,10 @@ export class Columna {
     return tarea;
   }
 
-
   // 5 · quitar(id): la saca del array y la devuelve · Error («… no está …») si no la encuentra
   //     Pista: findIndex + splice
   quitar(id) {
-    const idEliminado = this.#tareas.findIndex(tarea => tarea.id === id);
+    const idEliminado = this.#tareas.findIndex((tarea) => tarea.id === id);
 
     if (idEliminado === -1) {
       throw new Error(`La tarea ${id} no está en la columna "${this.nombre}".`);
@@ -67,10 +65,10 @@ export class Columna {
 
   // 6 · tiene(id): true / false. Pista: some
   tiene(id) {
-    return this.#tareas.some(tarea => tarea.id === id);
+    return this.#tareas.some((tarea) => tarea.id === id);
   }
 
-    // 7 · ordenadas(): un array NUEVO ordenado: primero prioridad alta (usa t.peso), y a igual
+  // 7 · ordenadas(): un array NUEVO ordenado: primero prioridad alta (usa t.peso), y a igual
   //     prioridad, el límite más cercano; las que no tienen límite, al final.
   //     Pista: [...this.#tareas].sort((a, b) => …) — ¿por qué la copia?
   ordenadas() {

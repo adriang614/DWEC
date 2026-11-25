@@ -27,7 +27,7 @@ export class Tablero {
 
   // static desde(datos, limiteEnCurso): un Tablero con una tarea por cada objeto de datos
   //   (usa crearTarea)
-  static desde (datos, limiteEnCurso) {
+  static desde(datos, limiteEnCurso) {
     const tablero = new Tablero(limiteEnCurso);
     for (const dato of datos) {
       tablero.crearTarea(dato);
@@ -53,7 +53,7 @@ export class Tablero {
   //   y la devuelve. datos es un objeto { titulo, prioridad, limite, cadaDias }: saca cada campo
   //   y pásaselo al constructor, en su orden (new Tarea(datos) NO vale: espera el título)
   crearTarea(datos) {
-    const {titulo, prioridad, limite, cadaDias} = datos;
+    const { titulo, prioridad, limite, cadaDias } = datos;
 
     let tarea;
     if (cadaDias) {
@@ -74,7 +74,7 @@ export class Tablero {
     }
     return columna.tareas.find((t) => t.id === id);
   }
-  
+
   // dondeEsta(id): la Columna donde está, o null
   dondeEsta(id) {
     for (const columna of this.#columnas.values()) {
@@ -85,7 +85,7 @@ export class Tablero {
     return null;
   }
 
-    // lo uso en mover y completar para no repetir las comprobaciones
+  // lo uso en mover y completar para no repetir las comprobaciones
   #trasladar(id, destino) {
     const origen = this.dondeEsta(id);
     if (origen === null) {
