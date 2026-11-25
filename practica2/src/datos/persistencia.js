@@ -8,7 +8,7 @@ export const CLAVE = "dwec-p2-tablero";
 
 // ✍️ C5 · guardarTablero(tablero, storage = localStorage): guarda el tablero en CLAVE
 export function guardarTablero(tablero, storage = localStorage) {
-  throw new Error("Sin hacer");
+  guardar(CLAVE, tablero, storage);
 }
 
 // ✍️ C6 · async arrancar({ storage = localStorage, fetchFn = fetch, url = "/tareas-iniciales.json",
@@ -20,7 +20,26 @@ export async function arrancar({
   url = "/tareas-iniciales.json",
   limiteEnCurso = 3,
 } = {}) {
-  throw new Error("Sin hacer");
-}
+  // 1 hay algo guardado y válido?
+  const guardado = cargar(CLAVE, null, storage);
+  if (guardado !== null) {
+    try {
+      return { tablero: Tablero.desdeJSON(guardado), origen: "guardado" };
+    } catch {
+      borrar(CLAVE, storage);
+    }
+  }
 
-(void Tablero, borrar, cargar, guardar, obtenerJSON); // (borra esta línea cuando los uses)
+  // 2 descargar las iniciales
+  try {
+    const datos = await obtenerJSON(url, fetchFn);
+    return { tablero: Tablero.desde(datos, limiteEnCurso), origen: "inicial" };
+  } catch (error) {
+    // 3 tablero vacío sin lanzar
+    return {
+      tablero: new Tablero(limiteEnCurso),
+      origen: "vacio",
+      error: error.message,
+    };
+  }
+}
