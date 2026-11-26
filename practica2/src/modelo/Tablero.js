@@ -6,6 +6,7 @@ import { ColumnaLlenaError, MovimientoNoPermitidoError } from "./errores.js";
 import { Tarea } from "./Tarea.js";
 import { TareaRecurrente } from "./TareaRecurrente.js";
 import { aDatos, desdeDatos } from "./serializar.js";
+import { TareaConMateriales } from "./TareaConMateriales.js";
 
 export class Tablero {
   static COLUMNAS = Object.freeze(["Por hacer", "En curso", "Hecho"]);
@@ -52,7 +53,7 @@ export class Tablero {
   // crearTarea(datos): TareaRecurrente si datos trae cadaDias, Tarea si no → a «Por hacer»
   //   y la devuelve. datos es un objeto { titulo, prioridad, limite, cadaDias }: saca cada campo
   //   y pásaselo al constructor, en su orden (new Tarea(datos) NO vale: espera el título)
-  crearTarea(datos) {
+  /* crearTarea(datos) {
     const { titulo, prioridad, limite, cadaDias } = datos;
 
     let tarea;
@@ -64,6 +65,18 @@ export class Tablero {
 
     this.columna("Por hacer").añadir(tarea);
     return tarea;
+  }  ANTIGUA */
+
+  crearTarea(datos) {
+    let tarea;
+    if (Object.hasOwn(datos, "materiales")) {
+      tarea = new TareaConMateriales(datos.titulo, datos.prioridad, datos.limite, datos.materiales);
+    } else if (Object.hasOwn(datos, "cadaDias")) {
+      tarea = new TareaRecurrente(datos.titulo, datos.prioridad, datos.limite, datos.cadaDias);
+    } else {
+      tarea = new Tarea(datos.titulo, datos.prioridad, datos.limite);
+    }
+    return this.columna("Por hacer").añadir(tarea);
   }
 
   // buscar(id): la tarea, esté en la columna que esté, o null
@@ -116,8 +129,29 @@ export class Tablero {
 
   // mover(id, destino): Error si no existe la tarea, Error si la columna destino está llena
   //   (comprueba antes de quitarla de su columna, o se perdería) la mueve y la devuelve
-  mover(id, destino) {
+  /*mover(id, destino) {
     return this.#trasladar(id, destino);
+  } ANTIGUO*/
+  mover(id, destino) {
+    const columnaDestino = this.#columnas.get(destino);
+    if (!columnaDestino) {
+      throw new Error(`La columna «${destino}» no existe`);
+    }
+    const columnaOrigen = this.dondeEsta(id);
+    if (!columnaOrigen) {
+      throw new Error(`La tarea ${id} no existe`);
+    }
+    if (columnaDestino === columnaOrigen || columnaOrigen.nombre === "Hecho") {
+      throw new MovimientoNoPermitidoError(id, columnaOrigen.nombre, columnaDestino.nombre);
+    }
+    if (columnaDestino.llena) {
+      throw new ColumnaLlenaError(columnaDestino);
+    }
+    const tarea = this.buscar(id);
+    tarea.comprobarMovimiento(destino);
+    columnaOrigen.quitar(id);
+    columnaDestino.añadir(tarea);
+    return tarea;
   }
 
   // completar(id): la mueve a Hecho y añade a Por hacer lo que devuelva tarea.alCompletar()

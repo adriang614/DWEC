@@ -41,6 +41,14 @@ export function validar(datos) {
   return errores;
 }
 
+function crearBoton(texto, accion) {
+  const boton = document.createElement("button");
+  boton.type = "button";
+  boton.dataset.accion = accion;
+  boton.textContent = texto;
+  return boton;
+}
+
 /**
  * Arranca la interfaz dentro de raiz (el <main id="app">). Los listeners se ponen UNA vez aquí;
  * pintar() solo cambia nodos, así que repintar no los duplica.
