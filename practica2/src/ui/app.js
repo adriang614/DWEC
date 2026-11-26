@@ -49,6 +49,31 @@ function crearBoton(texto, accion) {
   return boton;
 }
 
+const crear = (etiqueta, datos) => Object.assign(document.createElement(etiqueta), datos);
+
+function crearFormulario(tarea) {
+  const form = crear("form", { noValidate: true });
+  form.dataset.form = "renombrar";
+  const etiqueta = crear("label", {
+    textContent: `Título nuevo de ${tarea.titulo}`,
+  });
+  etiqueta.append(
+    crear("input", {
+      name: "titulo",
+      type: "text",
+      value: tarea.titulo,
+    }),
+  );
+  const error = crear("p", { className: "error" });
+  error.dataset.errorDe = "titulo";
+  const enviar = crear("button", {
+    type: "submit",
+    textContent: "Guardar",
+  });
+  form.append(etiqueta, error, enviar, crearBoton("Cancelar", "cancelar"));
+  return form;
+}
+
 /**
  * Arranca la interfaz dentro de raiz (el <main id="app">). Los listeners se ponen UNA vez aquí;
  * pintar() solo cambia nodos, así que repintar no los duplica.
@@ -88,6 +113,19 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
           tarjeta.append(boton);
         }
       }
+
+      for (const tarjeta of tarjetas) {
+const acciones = ACCIONES[nombreColumna];
+const id = Number(tarjeta.dataset.id);
+const tarea = tablero.buscar(id);
+for (const [texto, accion] of acciones) {
+tarjeta.append(crearBoton(texto, accion));
+}
+if (nombreColumna === "Por hacer" && tarea.limite !== null) {
+tarjeta.append(
+    crearBoton("Renombrar y empezar", "renombrar")
+    );
+    }
 
       // Contador
       const n = columna.tareas.length;

@@ -123,35 +123,15 @@ export class Tablero {
 
     // ya está comprobado, ahora la muevo
     const tarea = origen.quitar(id);
+    tarea.comprobarPaso(origen.nombre, destino);
     columnaDestino.añadir(tarea);
     return tarea;
   }
 
   // mover(id, destino): Error si no existe la tarea, Error si la columna destino está llena
   //   (comprueba antes de quitarla de su columna, o se perdería) la mueve y la devuelve
-  /*mover(id, destino) {
-    return this.#trasladar(id, destino);
-  } ANTIGUO*/
   mover(id, destino) {
-    const columnaDestino = this.#columnas.get(destino);
-    if (!columnaDestino) {
-      throw new Error(`La columna «${destino}» no existe`);
-    }
-    const columnaOrigen = this.dondeEsta(id);
-    if (!columnaOrigen) {
-      throw new Error(`La tarea ${id} no existe`);
-    }
-    if (columnaDestino === columnaOrigen || columnaOrigen.nombre === "Hecho") {
-      throw new MovimientoNoPermitidoError(id, columnaOrigen.nombre, columnaDestino.nombre);
-    }
-    if (columnaDestino.llena) {
-      throw new ColumnaLlenaError(columnaDestino);
-    }
-    const tarea = this.buscar(id);
-    tarea.comprobarMovimiento(destino);
-    columnaOrigen.quitar(id);
-    columnaDestino.añadir(tarea);
-    return tarea;
+    return this.#trasladar(id, destino);
   }
 
   // completar(id): la mueve a Hecho y añade a Por hacer lo que devuelva tarea.alCompletar()

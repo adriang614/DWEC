@@ -1,5 +1,6 @@
 import { Tarea } from "./Tarea.js";
 import { FaltaMaterialError } from "./errores.js";
+
 export class TareaConMateriales extends Tarea {
   #materiales;
   constructor(titulo, prioridad, limite, materiales) {
@@ -9,11 +10,13 @@ export class TareaConMateriales extends Tarea {
       unidades: 0,
     }));
   }
+
   get materiales() {
     return this.#materiales.map((material) => ({
       ...material,
     }));
   }
+
   contar(nombre, unidades) {
     const material = this.#materiales.find((m) => m.nombre === nombre);
     if (!material || !Number.isInteger(unidades) || unidades < 0) {
@@ -21,7 +24,8 @@ export class TareaConMateriales extends Tarea {
     }
     material.unidades = unidades;
   }
-  comprobarMovimiento(destino) {
+
+  comprobarPaso(destino) {
     if (destino !== "En curso") return;
     const faltan = this.#materiales.filter((m) => m.unidades === 0).map((m) => m.nombre);
     if (faltan.length > 0) {
