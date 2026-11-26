@@ -35,11 +35,9 @@ export class MovimientoNoPermitidoError extends ErrorTablero {
   }
 }
 
-
 export class FaltaMaterialError extends ErrorTablero {
   constructor(faltan) {
     super(`Faltan materiales: ${faltan.join(", ")}`);
     this.faltan = [...faltan];
   }
 }
-

@@ -104,28 +104,17 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
       pintarLista(lista, columna.ordenadas(), ahora);
 
       // Botones de cada tarjeta según la columna
-      for (const tarjeta of lista.querySelectorAll(".tarjeta")) {
-        for (const [texto, accion] of ACCIONES[columna.nombre]) {
-          const boton = document.createElement("button");
-          boton.type = "button";
-          boton.dataset.accion = accion;
-          boton.textContent = texto;
-          tarjeta.append(boton);
+      for (const tarjeta of tarjetas) {
+        const acciones = ACCIONES[nombreColumna];
+        const id = Number(tarjeta.dataset.id);
+        const tarea = tablero.buscar(id);
+        for (const [texto, accion] of acciones) {
+          tarjeta.append(crearBoton(texto, accion));
+        }
+        if (nombreColumna === "Por hacer" && tarea.limite !== null) {
+          tarjeta.append(crearBoton("Renombrar y empezar", "renombrar"));
         }
       }
-
-      for (const tarjeta of tarjetas) {
-const acciones = ACCIONES[nombreColumna];
-const id = Number(tarjeta.dataset.id);
-const tarea = tablero.buscar(id);
-for (const [texto, accion] of acciones) {
-tarjeta.append(crearBoton(texto, accion));
-}
-if (nombreColumna === "Por hacer" && tarea.limite !== null) {
-tarjeta.append(
-    crearBoton("Renombrar y empezar", "renombrar")
-    );
-    }
 
       // Contador
       const n = columna.tareas.length;
@@ -170,19 +159,34 @@ tarjeta.append(
   }
 
   delegar(columnas, "click", "button[data-accion]", (boton) => {
-    const id = Number(boton.closest(".tarjeta").dataset.id);
-
-    switch (boton.dataset.accion) {
-      case "empezar":
-        cambiar(() => tablero.mover(id, "En curso"));
-        break;
-      case "volver":
-        cambiar(() => tablero.mover(id, "Por hacer"));
-        break;
-      case "completar":
-        cambiar(() => tablero.completar(id));
-        break;
+    const accion = boton.dataset.accion;
+    const tarjeta = boton.closest(".tarjeta");
+    const id = Number(tarjeta.dataset.id);
+    if (accion === "empezar") {
+      cambiar(() => tablero.mover(id, "En curso"));
+    } else if (accion === "volver") {
+      cambiar(() => tablero.mover(id, "Por hacer"));
+    } else if (accion === "completar") {
+      cambiar(() => tablero.completar(id));
+    } else if (accion === "renombrar") {
+      let formulario = tarjeta.querySelector('[data-form="renombrar"]');
+      if (!formulario) {
+        formulario = crearFormulario(tablero.buscar(id));
+        tarjeta.append(formulario);
+      }
+      formulario.elements.titulo.focus();
+    } else if (accion === "cancelar") {
+      boton.closest("form").remove();
     }
+  });
+
+  delegar(columnas, "submit", "form", (formulario, evento) => {
+    evento.preventDefault(); // sin recargar la página
+    const tarea = tablero.buscar(Number(formulario.closest(".tarjeta").dataset.id));
+    const valor = formulario.elements.titulo.value.trim(); // SIEMPRE un string
+    const mensaje = revisar(valor, tarea, tablero, hoy ?? new Date());
+    mostrarErrores(formulario, { titulo: mensaje }); // pinta o borra el mensaje bajo el campo
+    if (mensaje === "") cambiar(() => aplicar(tablero, tarea, valor));
   });
 
   // ✍️ B6 · submit de `form`: preventDefault, leerFormulario, validar y mostrarErrores. Si hay errores,
